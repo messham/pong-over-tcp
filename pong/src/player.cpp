@@ -1,4 +1,10 @@
 #include "player.h"
+#include <QSize>
+
+//delete me
+#include <iostream>
+using namespace std;
+//
 
 Player::Player(int yPos, QWidget* parent) : QWidget(parent){
   // set background colour
@@ -7,16 +13,19 @@ Player::Player(int yPos, QWidget* parent) : QWidget(parent){
   setAutoFillBackground(true);
   setPalette(palette);
 
-  // TODO: move this to game class
-  pHeight = parent->height() / 20;
-  pWidth = parent->width() / 5;
-  xPos = (WIN_WIDTH / 2) - (pWidth / 2);
-  yPos = yPos - (pHeight / 2);
-  this->resize(pWidth, pHeight);
-  this->yPos = yPos;
-  this->move(xPos, yPos);
-
+  // set size and initial position
+  height = parent->height() / 20;
+  width = parent->width() / 5;
+  resize(width, height);
+  x = (parent->width() / 2) - (width / 2);
+  y = yPos - (height / 2);  
+  movePlayer(x);
   setMouseTracking(true);
+}
+
+void Player::movePlayer(int x) {
+  cout << x << " " << y << endl;
+  this->move(x, y);
 }
 
 void Player::mouseMoveEvent(QMouseEvent* event) {

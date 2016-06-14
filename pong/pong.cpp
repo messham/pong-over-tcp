@@ -1,6 +1,5 @@
+#include <QApplication>
 #include "src/window.h"
-
-//NOTE: copy constructors are disabled in the Qt Object Model; must use pointers
 
 int main(int argc, char **argv)
 {

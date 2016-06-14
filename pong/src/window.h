@@ -1,7 +1,15 @@
 #ifndef _WINDOW_H_
 #define _WINDOW_H_
 
-#include "qtlibs.h"
+#include <QApplication>
+#include <QCursor>
+#include <QFrame>
+#include <QPainter>
+#include <QPaintEvent>
+#include <QPushButton>
+#include <QObject>
+
+#include "game.h"
 
 #define WIN_HEIGHT 300
 #define WIN_WIDTH 200
@@ -12,13 +20,9 @@ class Window : public QWidget {
  public:
   Window();
  
-  // stubs
-  //void setPlayers(Player p1, Player p2);
-  //void setScore();
-  //void getScore();
-
  private:
   QFrame* frame;
+  Game* game;
   
  protected:
   void mouseMoveEvent(QMouseEvent* event);

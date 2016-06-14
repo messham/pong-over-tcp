@@ -21,6 +21,9 @@ Window::Window() {
   frame->setFrameStyle(QFrame::Box);	
   frame->setFixedSize(WIN_WIDTH - 5,WIN_HEIGHT - 5);
   frame->setPalette(palette);
+
+  // game init
+  game = new Game(this);
   
   setMouseTracking(true);
 }
