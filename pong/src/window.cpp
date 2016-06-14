@@ -19,7 +19,7 @@ Window::Window() {
   setFixedSize(WIN_WIDTH, WIN_HEIGHT);
   frame = new QFrame(this);
   frame->setFrameStyle(QFrame::Box);	
-  frame->setFixedSize(WIN_WIDTH - 5,WIN_HEIGHT - 5);
+  frame->setFixedSize(WIN_WIDTH,WIN_HEIGHT);
   frame->setPalette(palette);
 
   // game init
