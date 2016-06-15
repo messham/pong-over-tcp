@@ -6,11 +6,11 @@
 using namespace std;
 //
 
-Game::Game(Window* w) {
+Game::Game(Window* w, Player* p1, Player* p2) {
   window = w;
   // player init
-  p1 = new Player(P1YPOS, window);
-  p2 = new Player(P2YPOS, window);
+  this->p1 = p1;
+  this->p2 = p2;
 
   cout << p1->parentWidget()->metaObject()->className() << endl;
 
@@ -19,4 +19,8 @@ Game::Game(Window* w) {
   // frame->installEventFilter(this);
   // p1->installEventFilter(this);
   // p1->installEventFilter(this);
+}
+
+void Game::movePlayer(Player* p, int pos) {
+  
 }

@@ -17,7 +17,8 @@ class Game : public QWidget {
   Player* p2;
   
  public:
-  Game(Window* w);
+  Game(Window* w, Player* p1, Player* p2);
+  void movePlayer(Player* p, int pos);
 
   // stubs
   //void setPlayers(Player p1, Player p2);
