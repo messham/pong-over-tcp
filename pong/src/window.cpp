@@ -12,7 +12,7 @@ using namespace std;
 
 Window::Window() {
 
-  // colour init
+  // set colour
   QPalette palette(Window::palette());
   palette.setColor(QPalette::Background, Qt::black);
   palette.setColor(QPalette::Foreground, Qt::white);
@@ -46,16 +46,6 @@ int Window::getHeight() {
   return height;
 }
 
-bool Window::eventFilter(QObject* obj, QEvent* event) {
-  if (event->type() == QEvent::MouseMove) return true;
-  return QObject::eventFilter(obj, event);
-}
-
 void Window::mouseMoveEvent(QMouseEvent* event) {
   game->movePlayer(player, event->x());
-  
-  //p1->move(p1->mapToGlobal(QCursor::pos()));
-  // if (event->buttons()) {
-  //   this->move(event->pos());
-  // }
 }

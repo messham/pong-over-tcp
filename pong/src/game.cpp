@@ -13,11 +13,6 @@ Game::Game(Window* w, Player* p1, Player* p2) {
   this->p2 = p2;
 
   cout << p1->parentWidget()->metaObject()->className() << endl;
-  //this->move(xPos, yPos);
-  
-  // frame->installEventFilter(this);
-  // p1->installEventFilter(this);
-  // p1->installEventFilter(this);
 }
 
 // move player along x axis within game window

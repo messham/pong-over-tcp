@@ -24,7 +24,6 @@ class Window : public QWidget {
   
  protected:
   void mouseMoveEvent(QMouseEvent* event);
-  bool eventFilter(QObject* obj, QEvent* event);
   
  public:
   Window();
