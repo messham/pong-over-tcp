@@ -1,5 +1,6 @@
 #include "window.h"
 #include "game.h"
+#include "player.h"
 
 //delete me
 #include <iostream>
@@ -23,7 +24,9 @@ Window::Window() {
   frame->setPalette(palette);
 
   // game init
-  game = new Game(this);
+  player = new Player(P1YPOS, this);
+  Player* player2 = new Player(P2YPOS, this);
+  game = new Game(this, player, player2);
   
   setMouseTracking(true);
 }
@@ -34,6 +37,8 @@ bool Window::eventFilter(QObject* obj, QEvent* event) {
 }
 
 void Window::mouseMoveEvent(QMouseEvent* event) {
+  // game->movePlayer(event->pos());
+  
   //p1->move(p1->mapToGlobal(QCursor::pos()));
   // if (event->buttons()) {
   //   this->move(event->pos());
