@@ -11,7 +11,7 @@ Game::Game(Window* w, Player* p1, Player* p2) {
   // player init
   this->p1 = p1;
   this->p2 = p2;
-
+  ball = new Ball(window);
   cout << p1->parentWidget()->metaObject()->className() << endl;
 }
 

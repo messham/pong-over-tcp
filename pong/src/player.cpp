@@ -41,10 +41,9 @@ void Player::mouseMoveEvent(QMouseEvent* event) {
 }
 
 void Player::paintEvent(QPaintEvent* event) {
-    QRect rect = event->rect();
-    QPainter painter(this);
-    painter.setRenderHint(QPainter::Antialiasing);
-    painter.setBrush(Qt::white);
-    painter.drawRect(rect);
-    // painter.translate
+    // QRect rect = event->rect();
+    // QPainter painter(this);
+    // painter.setRenderHint(QPainter::Antialiasing);
+    // painter.setBrush(Qt::white);
+    // painter.drawRect(rect);
 }

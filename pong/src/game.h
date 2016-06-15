@@ -2,6 +2,7 @@
 #define _GAME_H_
 
 #include "player.h"
+#include "ball.h"
 
 #define P1YPOS WIN_HEIGHT - (WIN_HEIGHT / 15)
 #define P2YPOS WIN_HEIGHT / 15
@@ -15,6 +16,7 @@ class Game : public QWidget {
   Window* window;
   Player* p1;
   Player* p2;
+  Ball* ball;
   
  public:
   Game(Window* w, Player* p1, Player* p2);

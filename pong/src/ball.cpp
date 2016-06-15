@@ -15,6 +15,11 @@ Ball::Ball(QWidget* parent) : QWidget(parent) {
   resize(width, height);
   x = (parent->width() / 2) - (width / 2);
   y = (parent->height() / 2) - (height / 2);
+  setPos(x, y);
+}
+
+void Ball::setPos(int x, int y) {
+  this->move(x, y);
 }
 
 void Ball::paintEvent(QPaintEvent* event) {

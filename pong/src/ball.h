@@ -23,6 +23,7 @@ class Ball : public QWidget {
   
  public:
   Ball(QWidget* parent);
+  void setPos(int x, int y);
   
 };
 
