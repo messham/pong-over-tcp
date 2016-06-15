@@ -3,8 +3,8 @@
 
 #include "player.h"
 
-#define P1YPOS WIN_HEIGHT / 15
-#define P2YPOS WIN_HEIGHT - (WIN_HEIGHT / 15)
+#define P1YPOS WIN_HEIGHT - (WIN_HEIGHT / 15)
+#define P2YPOS WIN_HEIGHT / 15
 
 class Window;
 

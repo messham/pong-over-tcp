@@ -22,12 +22,13 @@ Window::Window() {
   frame->setFrameStyle(QFrame::Box);	
   frame->setFixedSize(WIN_WIDTH,WIN_HEIGHT);
   frame->setPalette(palette);
+  frame->setMouseTracking(true);
 
   // game init
   player = new Player(P1YPOS, this);
   Player* player2 = new Player(P2YPOS, this);
   game = new Game(this, player, player2);
-  
+
   setMouseTracking(true);
 }
 
@@ -37,7 +38,7 @@ bool Window::eventFilter(QObject* obj, QEvent* event) {
 }
 
 void Window::mouseMoveEvent(QMouseEvent* event) {
-  // game->movePlayer(event->pos());
+  game->movePlayer(player, event->x());
   
   //p1->move(p1->mapToGlobal(QCursor::pos()));
   // if (event->buttons()) {

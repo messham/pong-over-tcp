@@ -13,7 +13,6 @@ Game::Game(Window* w, Player* p1, Player* p2) {
   this->p2 = p2;
 
   cout << p1->parentWidget()->metaObject()->className() << endl;
-
   //this->move(xPos, yPos);
   
   // frame->installEventFilter(this);
@@ -22,5 +21,5 @@ Game::Game(Window* w, Player* p1, Player* p2) {
 }
 
 void Game::movePlayer(Player* p, int pos) {
-  
+  p->setPos(pos);
 }

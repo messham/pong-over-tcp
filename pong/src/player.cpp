@@ -20,11 +20,9 @@ Player::Player(int yPos, QWidget* parent) : QWidget(parent){
   x = (parent->width() / 2) - (width / 2);
   y = yPos - (height / 2);  
   setPos(x);
-  setMouseTracking(true);
 }
 
 void Player::setPos(int x) {
-  cout << x << " " << y << endl;
   this->move(x, y);
 }
 
