@@ -7,6 +7,9 @@
 using namespace std;
 //
 
+#define WIN_HEIGHT 300
+#define WIN_WIDTH 200
+
 Window::Window() {
 
   // colour init
@@ -16,13 +19,16 @@ Window::Window() {
   setAutoFillBackground(true);
   setPalette(palette);
 
-  // window + frame init
-  setFixedSize(WIN_WIDTH, WIN_HEIGHT);
+  // set size, frame and cursor
+  width = WIN_WIDTH;
+  height = WIN_HEIGHT;
+  setFixedSize(width, height);
   frame = new QFrame(this);
   frame->setFrameStyle(QFrame::Box);	
-  frame->setFixedSize(WIN_WIDTH,WIN_HEIGHT);
+  frame->setFixedSize(width, height);
   frame->setPalette(palette);
   frame->setMouseTracking(true);
+  setCursor(Qt::BlankCursor);
 
   // game init
   player = new Player(P1YPOS, this);
@@ -30,6 +36,14 @@ Window::Window() {
   game = new Game(this, player, player2);
 
   setMouseTracking(true);
+}
+
+int Window::getWidth() {
+  return width;
+}
+
+int Window::getHeight() {
+  return height;
 }
 
 bool Window::eventFilter(QObject* obj, QEvent* event) {

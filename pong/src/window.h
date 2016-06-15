@@ -11,24 +11,25 @@
 
 #include "game.h"
 
-#define WIN_HEIGHT 300
-#define WIN_WIDTH 200
-
 // two instances of window required for multiplayer -- player refers to this instance's user and his/her mouse movements
 class Window : public QWidget {
   Q_OBJECT
 
- public:
-  Window();
- 
  private:
-  QFrame* frame;
   Game* game;
-  Player* player; 
+  Player* player;   
+  QFrame* frame;
+  int width;
+  int height;
   
  protected:
   void mouseMoveEvent(QMouseEvent* event);
   bool eventFilter(QObject* obj, QEvent* event);
+  
+ public:
+  Window();
+  int getWidth();
+  int getHeight();
 };
 
 #endif

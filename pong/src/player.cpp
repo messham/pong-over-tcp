@@ -26,6 +26,10 @@ void Player::setPos(int x) {
   this->move(x, y);
 }
 
+int Player::getWidth() {
+  return width;
+}
+
 int Player::getPos() {
   return 0; //stub
 }

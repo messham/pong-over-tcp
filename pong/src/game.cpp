@@ -20,6 +20,11 @@ Game::Game(Window* w, Player* p1, Player* p2) {
   // p1->installEventFilter(this);
 }
 
+// move player along x axis within game window
 void Game::movePlayer(Player* p, int pos) {
-  p->setPos(pos);
+  int rightPos = window->getWidth() - p->getWidth();
+  if (pos > rightPos)
+    p->setPos(rightPos);
+  else
+    p->setPos(pos);
 }
