@@ -24,7 +24,8 @@ class Player : public QWidget {
   
  public:
   Player(int yPos, QWidget* parent);
-  void movePlayer(int x);
+  void setPos(int x);
+  int getPos();
   
 };
 

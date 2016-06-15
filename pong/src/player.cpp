@@ -19,13 +19,17 @@ Player::Player(int yPos, QWidget* parent) : QWidget(parent){
   resize(width, height);
   x = (parent->width() / 2) - (width / 2);
   y = yPos - (height / 2);  
-  movePlayer(x);
+  setPos(x);
   setMouseTracking(true);
 }
 
-void Player::movePlayer(int x) {
+void Player::setPos(int x) {
   cout << x << " " << y << endl;
   this->move(x, y);
+}
+
+int Player::getPos() {
+  return 0; //stub
 }
 
 void Player::mouseMoveEvent(QMouseEvent* event) {
