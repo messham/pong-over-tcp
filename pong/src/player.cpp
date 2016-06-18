@@ -21,7 +21,16 @@ Player::Player(int yPos, QWidget* parent) : QWidget(parent){
   setPos(x);
 }
 
-void Player::setPos(int x) {
+int Player::getXPos() {
+  return x;
+}
+
+int Player::getYPos() {
+  return y;
+}
+
+void Player::setPos(int xpos) {
+  x = xpos;
   this->move(x, y);
 }
 
@@ -29,8 +38,12 @@ int Player::getWidth() {
   return width;
 }
 
+int Player::getHeight() {
+  return height;
+}
+
 int Player::getPos() {
-  return 0; //stub
+  return 0;  //stub
 }
 
 void Player::mouseMoveEvent(QMouseEvent* event) {
