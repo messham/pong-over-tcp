@@ -1,4 +1,5 @@
 *.app
 *.o
 moc*
+*.org
 Makefile
