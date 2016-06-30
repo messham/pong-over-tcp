@@ -31,27 +31,54 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-  if (argc > 2) { //|| atoi(argv[1]) != 1 || atoi(argv[1]) != 2) {
+  if (argc > 2 || (string(argv[1]) != "1" && string(argv[1]) != "2")) {
     printf("usage: %s <number of players>(default: 1 player)", argv[0]);
     exit(1);
   }
 
-  if (argc == 2 && atoi(argv[1]) == 2) { // multiplayer
-    int port;
-    string tmpip;
-    cout << "port: ";
-    cin >> port;
-    cout << "ip: ";
-    cin >> tmpip;
+  if (string(argv[1]) == "2") { // multiplayer
     // try connecting client to inputted port/ip,
     // if no server there try creating new server with
     // given port/ip
-    const char* ip = tmpip.c_str();
-    Server* server = new Server(port, ip);
-    server->start();
-    Client* client = new Client(port, ip);
+    Server* server;
+    Client* client;
+    while (!client) {
+      cout << "Please enter port and ip of server to connect to (default: port 8000 ip localhost)" << endl;
+      string tmpport;
+      int port;
+      cout << "port: ";
+      getline(cin, tmpport);
+      if (tmpport.empty()) port = 8000;
+      else port = atoi(tmpport.c_str());
     
+      string tmpip;
+      cout << "ip: ";
+      getline(cin, tmpip);
+      if (tmpip.empty()) tmpip = "localhost";
+      const char* ip = tmpip.c_str();
+      
+      try {
+	client = new Client(port, ip);
+      }
+      catch (exception e){
+	string ans;
+	cout << "Could not connect to server. Start one at given port/ip? (Y/N)";
+	cin >> ans;
+	if (ans == "N" || ans == "n") return 0;
+	else {
+	  server = new Server(port, ip);
+	  server->start();
+	  client = new Client(port, ip);
+	  cout << "Connecting to port: " << port <<  ", server: " << tmpip << endl;
+	}
+	  
+      }
+    }  
   }
+  else if (string(argv[1]) == "1") { //singleplayer
+    // set ai
+  }
+  
   QApplication app (argc, argv);
   Window window;
   // place players, ball on window

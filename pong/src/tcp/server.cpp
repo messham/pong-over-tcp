@@ -28,6 +28,10 @@
 #include "server.h"
 #include "tcpacceptor.h"
 
+#include <iostream>
+using namespace std;
+
+
 void Server::runServer() {
   TCPStream* stream = NULL;
   TCPAcceptor* acceptor = NULL;

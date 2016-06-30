@@ -25,18 +25,21 @@
 #include <stdlib.h>
 #include <string>
 #include "client.h"
-#include "tcpconnector.h"
-
-using namespace std;
 
 Client::Client(int port, const char* ip) {
   this->port = port;
   this->ip = ip;
+  connector = new TCPConnector();
+  stream = connector->connect(ip, port); 
+
+  if (!stream) {
+    throw std::invalid_argument("Client::Client - stream failed to connect to given port and ip");
+  }
+
+
   int len;
   string message;
   char line[256];
-  TCPConnector* connector = new TCPConnector();
-  TCPStream* stream = connector->connect(ip, port);
   if (stream) {
     message = "Is there life on Mars?";
     stream->send(message.c_str(), message.size());
@@ -47,15 +50,4 @@ Client::Client(int port, const char* ip) {
     delete stream;
   }
 
-  stream = connector->connect(ip, port);
-  if (stream) {
-    message = "Why is there air?";
-    stream->send(message.c_str(), message.size());
-    printf("sent - %s\n", message.c_str());
-    len = stream->receive(line, sizeof(line));
-    line[len] = 0;
-    printf("received - %s\n", line);
-    delete stream;
-  }
-  //exit(0);
 }

@@ -27,6 +27,11 @@
 #include <arpa/inet.h>
 #include "tcpacceptor.h"
 
+//#include <iostream>
+
+using namespace std;
+
+
 TCPAcceptor::TCPAcceptor(int port, const char* address) 
     : m_lsd(0), m_port(port), m_address(address), m_listening(false) {} 
 
@@ -50,12 +55,18 @@ int TCPAcceptor::start()
     address.sin_family = PF_INET;
     address.sin_port = htons(m_port);
     if (m_address.size() > 0) {
-        inet_pton(PF_INET, m_address.c_str(), &(address.sin_addr));
+      printf("Server side addresses: \n");
+      printf("%s \n", m_address.c_str());
+      printf("%d \n", address.sin_addr.s_addr);
+      int test =
+      inet_pton(PF_INET, m_address.c_str(), &(address.sin_addr));
+      printf("%d \n", address.sin_addr.s_addr);
+      printf("%d \n", test);
+      printf("-------------------------");      
     }
     else {
-        address.sin_addr.s_addr = INADDR_ANY;
+      address.sin_addr.s_addr = INADDR_ANY;
     }
-    
     int optval = 1;
     setsockopt(m_lsd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval); 
     
