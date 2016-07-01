@@ -1,5 +1,5 @@
 /*
-   window.h - abstract class
+   window-sp.h - window subclass for singplayer pong
 
    Simply pong.
 
@@ -20,41 +20,19 @@
    limitations under the License.
 */
 
-#ifndef _WINDOW_H_
-#define _WINDOW_H_
+#include "window.h"
 
-#include <QApplication>
-#include <QCursor>
-#include <QFrame>
-#include <QPainter>
-#include <QPaintEvent>
-#include <QPushButton>
-#include <QObject>
-
-#include "game.h"
-#include "tcp/client.h"
-
-class Window : public QWidget {
-  Q_OBJECT
-
- private:
-  QFrame* frame;
-  int width;
-  int height;
+class WindowSP : public Window {
+public:
+  WindowSP() : Window()  {
+    // game init
+    client = NULL;
+    player = new Player(P1YPOS, this);
+    Player* player2 = new Player(P2YPOS, this);
+    game = new Game(this, player, player2);
+  }
   
- protected:
-  int WIN_HEIGHT = 300;
-  int WIN_WIDTH = 200;
-  Game* game;
-  Player* player;
-  Client* client;
-  void mouseMoveEvent(QMouseEvent* event);
-  
- public:
-  Window();
-  Window(Client* client);
-  int getWidth();
-  int getHeight();
+  void mouseMoveEvent(QMouseEvent* event) {
+    game->movePlayer(player, event->x());
+  }
 };
-
-#endif

@@ -13,6 +13,7 @@ class Client {
 
  public:
   Client(int port, const char* ip);
+  ~Client();
 
 };
 

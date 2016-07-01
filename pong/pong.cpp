@@ -21,7 +21,7 @@
 */
 
 #include <QApplication>
-#include "src/window.h"
+#include "src/window-sp.h"
 #include "src/tcp/client.h"
 #include "src/tcp/server.h"
 
@@ -40,10 +40,11 @@ int main(int argc, char **argv)
     // try connecting client to inputted port/ip,
     // if no server there try creating new server with
     // given port/ip
-    Server* server;
-    Client* client;
+    Server* server = NULL;
+    Client* client = NULL;
     while (!client) {
-      cout << "Please enter port and ip of server to connect to (default: port 8000 ip localhost)" << endl;
+      cout << "Please enter port and ip of server to connect to "
+	   << "(default: port 8000 ip localhost)" << endl;
       string tmpport;
       int port;
       cout << "port: ";
@@ -62,27 +63,30 @@ int main(int argc, char **argv)
       }
       catch (exception e){
 	string ans;
-	cout << "Could not connect to server. Start one at given port/ip? (Y/N)";
-	cin >> ans;
-	if (ans == "N" || ans == "n") return 0;
-	else {
-	  server = new Server(port, ip);
-	  server->start();
-	  client = new Client(port, ip);
-	  cout << "Connecting to port: " << port <<  ", server: " << tmpip << endl;
-	}
-	  
+	while (!server) {
+	  cout << "Could not connect to server. Start one at given port/ip? (Y/N): ";
+	  getline(cin, ans);
+	  if (ans == "N" || ans == "n") return 0;
+	  else if (ans == "Y" || ans == "y")  {
+	    server = new Server(port, ip);
+	    server->start();
+	    client = new Client(port, ip);
+	    cout << "Connecting to port: " << port <<  ", server: " << tmpip << endl;
+	  }
+	} 
       }
     }  
   }
   else if (string(argv[1]) == "1") { //singleplayer
     // set ai
   }
+
+  //launch game
   
   QApplication app (argc, argv);
-  Window window;
-  // place players, ball on window
+  WindowSP window;
   window.show();
   return app.exec();
-  // TODO: close threads upon exiting app
+  
+  
 }

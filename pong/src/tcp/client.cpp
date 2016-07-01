@@ -51,3 +51,8 @@ Client::Client(int port, const char* ip) {
   }
 
 }
+
+Client::~Client() {
+  delete connector;
+  delete stream;
+}

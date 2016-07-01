@@ -29,8 +29,6 @@
 using namespace std;
 //
 
-#define WIN_HEIGHT 300
-#define WIN_WIDTH 200
 
 Window::Window() {
 
@@ -52,12 +50,12 @@ Window::Window() {
   frame->setMouseTracking(true);
   setCursor(Qt::BlankCursor);
 
-  // game init
-  player = new Player(P1YPOS, this);
-  Player* player2 = new Player(P2YPOS, this);
-  game = new Game(this, player, player2);
-
   setMouseTracking(true);
+}
+
+Window::Window(Client* client) {
+  Window();
+  this->client = client;
 }
 
 int Window::getWidth() {
@@ -68,6 +66,7 @@ int Window::getHeight() {
   return height;
 }
 
-void Window::mouseMoveEvent(QMouseEvent* event) {
-  game->movePlayer(player, event->x());
-}
+void Window::mouseMoveEvent(QMouseEvent* event) {}
+
+
+
