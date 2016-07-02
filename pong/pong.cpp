@@ -22,6 +22,7 @@
 
 #include <QApplication>
 #include "src/window-sp.h"
+#include "src/window-mp.h"
 #include "src/tcp/client.h"
 #include "src/tcp/server.h"
 
@@ -36,6 +37,9 @@ int main(int argc, char **argv)
     exit(1);
   }
 
+  QApplication app (argc, argv);
+  Window* window;
+  
   if (string(argv[1]) == "2") { // multiplayer
     // try connecting client to inputted port/ip,
     // if no server there try creating new server with
@@ -75,18 +79,17 @@ int main(int argc, char **argv)
 	  }
 	} 
       }
-    }  
+    }
+    window = new WindowMP;
   }
+  
   else if (string(argv[1]) == "1") { //singleplayer
     // set ai
+    window = new WindowSP;
+    
   }
-
-  //launch game
   
-  QApplication app (argc, argv);
-  WindowSP window;
-  window.show();
+  window->show();
   return app.exec();
-  
   
 }

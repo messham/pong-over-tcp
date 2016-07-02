@@ -15,6 +15,7 @@ src/tcp/tcpconnector.cpp
 
 HEADERS += src/window.h \
 src/window-sp.h \
+src/window-mp.h \
 src/game.h \
 src/player.h \
 src/ball.h \
