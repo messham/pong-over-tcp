@@ -22,11 +22,15 @@
 
 #include "window.h"
 
+#include <iostream>
+using namespace std;
+
 class WindowMP : public Window {
 public:
-  WindowMP() : Window()  {
+  WindowMP(Client* client, Server* server) : Window()  {
     // game init
-    client = NULL;
+    this->client = client;
+    this->server = server;
     player = new Player(P1YPOS, this);
     Player* player2 = new Player(P2YPOS, this);
     game = new Game(this, player, player2);
@@ -34,5 +38,7 @@ public:
   
   void mouseMoveEvent(QMouseEvent* event) {
     game->movePlayer(player, event->x());
+    cout << event->x() << endl;
+    // send coords to server
   }
 };

@@ -25,33 +25,57 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <thread>
+#include <mutex>
 #include "server.h"
+#include "wqueue.h"
 #include "tcpacceptor.h"
 
 #include <iostream>
 using namespace std;
 
+void Server::handleConnection(wqueue<WorkItem*>& queue) {
+  // Remove 1 item at a time and process it. Blocks until an item 
+  // is placed on the queue.
+  
+  for (int i = 0;; i++) {
+    printf("some thread, loop %d - waiting for item...\n", i);
+    WorkItem* item = queue.remove();
+    printf("some thread, loop %d - got one item\n", i);
+    TCPStream* stream = item->getStream();
+ 
+    // Echo messages back the client until the connection is 
+    // closed
+    char input[256];
+    int len;
+    while ((len = stream->receive(input, sizeof(input)-1)) > 0 ){
+      input[len] = NULL;
+      stream->send(input, len);
+      printf("some thread, echoed '%s' back to the client\n", input);
+    }
+    delete item; 
+  }
 
-void Server::runServer() {
+}
+
+void Server::acceptConnections() {
+  // create queue and consumer threads
+  wqueue<WorkItem*> queue;
+  
+  for (int i = 0; i < 2; i++)
+    std::thread (&Server::handleConnection, this, std::ref(queue));
+  
+
+  WorkItem* item;
   TCPStream* stream = NULL;
-  TCPAcceptor* acceptor = NULL;
-  acceptor = new TCPAcceptor(port, ip);  
+  TCPAcceptor* acceptor = new TCPAcceptor(port, ip);
   if (acceptor->start() == 0) {
-    isRunning = true;    
-    while (isRunning) {
+    while (1) { // accept connections until there are two players
       stream = acceptor->accept();
-      if (stream != NULL) {
-	ssize_t len;
-	char line[256];
-	while ((len = stream->receive(line, sizeof(line))) > 0) {
-	  line[len] = 0;
-	  printf("received - %s\n", line);
-	  stream->send(line, len);
-	}
-	delete stream;
-      }
+      item = new WorkItem(stream);
+      queue.add(item);
     }
   }
+  tAccept.join();
 }
 
 Server::Server(int port, const char* ip) {
@@ -66,11 +90,11 @@ Server::~Server() {
 
 void Server::start() {
   isRunning = true;  
-  thread_ = std::thread(&Server::runServer, this);
+  tAccept = std::thread(&Server::acceptConnections, this);
 }
 
 void Server::stop() {
   isRunning = false;
-  thread_.join();
+  if (tAccept.joinable()) tAccept.join();
 }
 

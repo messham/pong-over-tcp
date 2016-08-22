@@ -2,6 +2,7 @@
 #define _CLIENT_H
 
 #include "tcpconnector.h"
+#include <thread>
 
 class Client {
 

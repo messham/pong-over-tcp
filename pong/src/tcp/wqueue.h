@@ -1,8 +1,8 @@
 /*
   wqueue.h
 
-  Worker thread queue based on the Standard C++ library list
-  template class.
+  Worker thread queue based Vic Hargrave's work adapted to utilize
+  c++11 thread, mutex, and condition_variable
 
   ------------------------------------------
 
@@ -21,8 +21,6 @@
   See the License for the specific language governing permissions and
   limitations under the License.
 */
-
-// code adapted to use c++11 thread, mutex, cv
 
 #ifndef __wqueue_h__
 #define __wqueue_h__
@@ -44,14 +42,19 @@ class WorkItem {
     TCPStream* getStream() { return m_stream; }
 };
 
+#define MAXSIZE 2
+
 template <typename T> class wqueue
 {
 private:
   list<T> m_queue;
   mutex  m_mutex;
-  condition_variable m_condv; 
-
+  condition_variable cvIsEmpty;
+  condition_variable cvIsFull;
+  // note: unique_lock releases lock when it (lk) is destroyed (no need to call unlock)
+  
 public:
+
   wqueue() {}
   
   ~wqueue() {}
@@ -59,28 +62,28 @@ public:
   wqueue(wqueue&& o) = default;
   
   void add(T item) {
-    m_mutex.lock();
+    unique_lock<mutex> lk(m_mutex);
+    while (m_queue.size() == MAXSIZE) {
+      cvIsFull.wait(lk);
+    }
     m_queue.push_back(item);
-    m_condv.notify_one();
-    m_mutex.unlock();
+    cvIsEmpty.notify_one();
   }
   
   T remove() {
     unique_lock<mutex> lk(m_mutex);
-    m_mutex.lock();
     while (m_queue.size() == 0) {
-      m_condv.wait(lk);
+      cvIsEmpty.wait(lk);
     }
     T item = m_queue.front();
     m_queue.pop_front();
-    m_mutex.unlock();
+    cvIsFull.notify_one();
     return item;
   }
   
   int size() {
-    m_mutex.lock();
+    unique_lock<mutex> lk(m_mutex);
     int size = m_queue.size();
-    m_mutex.unlock();
     return size;
   }
 

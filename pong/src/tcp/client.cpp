@@ -46,7 +46,7 @@ Client::Client(int port, const char* ip) {
     printf("sent - %s\n", message.c_str());
     len = stream->receive(line, sizeof(line));
     line[len] = 0;
-    printf("received - %s\n", line);
+    printf("client received - %s\n", line);
     delete stream;
   }
 

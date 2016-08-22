@@ -21,6 +21,7 @@ src/player.h \
 src/ball.h \
 src/tcp/client.h \
 src/tcp/server.h \
+src/tcp/wqueue.h \
 src/tcp/tcpstream.h \
 src/tcp/tcpacceptor.h \
-src/tcp/tcpconnector.h 
+src/tcp/tcpconnector.h

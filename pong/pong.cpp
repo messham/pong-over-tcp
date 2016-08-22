@@ -32,7 +32,7 @@ using namespace std;
 
 int main(int argc, char **argv)
 {
-  if (argc > 2 || (string(argv[1]) != "1" && string(argv[1]) != "2")) {
+  if (argc != 2 || (string(argv[1]) != "1" && string(argv[1]) != "2")) {
     printf("usage: %s <number of players>(default: 1 player)", argv[0]);
     exit(1);
   }
@@ -80,7 +80,7 @@ int main(int argc, char **argv)
 	} 
       }
     }
-    window = new WindowMP;
+    window = new WindowMP(client, server);
   }
   
   else if (string(argv[1]) == "1") { //singleplayer

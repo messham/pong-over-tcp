@@ -5,7 +5,7 @@
 
    ------------------------------------------
 
-   Copyright 2016 JM Messham
+   Copyright 2016 JM Messham and Trevor Stokvis
 
    Licensed under the Apache License, Version 2.0 (the "License");
    you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ void Game::timerEvent(QTimerEvent *event) {
   if (ball->getXPos() < ball->getWidth()) p2->setPos(ball->getXPos());
   else p2->setPos(ball->getXPos()-ball->getWidth() + 7);
 
-   checkCollision();
+  checkCollision();
 
 }
 

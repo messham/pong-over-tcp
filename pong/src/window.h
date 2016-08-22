@@ -33,6 +33,7 @@
 
 #include "game.h"
 #include "tcp/client.h"
+#include "tcp/server.h"
 
 class Window : public QWidget {
   Q_OBJECT
@@ -48,7 +49,8 @@ class Window : public QWidget {
   Game* game;
   Player* player;
   Client* client;
-  void mouseMoveEvent(QMouseEvent* event);
+  Server* server;
+  virtual void mouseMoveEvent(QMouseEvent* event);
   
  public:
   Window();
