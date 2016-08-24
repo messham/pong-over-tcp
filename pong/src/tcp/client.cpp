@@ -26,6 +26,8 @@
 #include <string>
 #include "client.h"
 
+#include <iostream>
+
 Client::Client(int port, const char* ip) {
   this->port = port;
   this->ip = ip;
@@ -41,18 +43,33 @@ Client::Client(int port, const char* ip) {
   string message;
   char line[256];
   if (stream) {
-    message = "Is there life on Mars?";
-    stream->send(message.c_str(), message.size());
-    printf("sent - %s\n", message.c_str());
-    len = stream->receive(line, sizeof(line));
-    line[len] = 0;
-    printf("client received - %s\n", line);
-    delete stream;
+    // message = "Is there life on Mars?";
+    // stream->send(message.c_str(), message.size());
+    // printf("sent - %s\n", message.c_str());
+    // len = stream->receive(line, sizeof(line));
+    // line[len] = 0;
+    // printf("client received - %s\n", line); //BLOCKING??
   }
-
 }
 
 Client::~Client() {
   delete connector;
   delete stream;
+}
+
+void Client::sendCoords(int x) {
+  
+  if (!stream) {
+    printf("No connection to server!");
+    return; //return -1;
+  }
+  int coord = htonl(x);
+  stream->send((const char*) &coord, sizeof(int));
+  printf("client sent - %d\n", x);
+  
+  ssize_t len;
+  int recv;
+  len = stream->receive((char*)&recv, sizeof(recv));
+  // recv = htonl(recv);
+  printf("client received - %d\n", recv);
 }

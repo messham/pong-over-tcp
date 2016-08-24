@@ -37,8 +37,12 @@ public:
   }
   
   void mouseMoveEvent(QMouseEvent* event) {
-    game->movePlayer(player, event->x());
-    cout << event->x() << endl;
+    // currently just sends coords and doesn't move player
+    client->sendCoords(event->x());
+    
+    // uncomment below to move payer and not send coords
+    /* game->movePlayer(player, event->x()); */
+    /* cout << event->x() << endl; */
     // send coords to server
   }
 };

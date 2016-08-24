@@ -29,7 +29,7 @@
 
 //#include <iostream>
 
-using namespace std;
+//using namespace std;
 
 
 TCPAcceptor::TCPAcceptor(int port, const char* address) 
@@ -59,7 +59,7 @@ int TCPAcceptor::start()
       printf("%s \n", m_address.c_str());
       printf("%d \n", address.sin_addr.s_addr);
       int test =
-      inet_pton(PF_INET, m_address.c_str(), &(address.sin_addr));
+	inet_pton(PF_INET, m_address.c_str(), &(address.sin_addr));
       printf("%d \n", address.sin_addr.s_addr);
       printf("%d \n", test);
       printf("-------------------------");      
@@ -70,7 +70,7 @@ int TCPAcceptor::start()
     int optval = 1;
     setsockopt(m_lsd, SOL_SOCKET, SO_REUSEADDR, &optval, sizeof optval); 
     
-    int result = bind(m_lsd, (struct sockaddr*)&address, sizeof(address));
+    int result = ::bind(m_lsd, (struct sockaddr*)&address, sizeof(address));
     if (result != 0) {
         perror("bind() failed");
         return result;
@@ -94,8 +94,8 @@ TCPStream* TCPAcceptor::accept()
     struct sockaddr_in address;
     socklen_t len = sizeof(address);
     memset(&address, 0, sizeof(address));
-    int sd = ::accept(m_lsd, (struct sockaddr*)&address, &len);
-    if (sd < 0) {
+    int sd = ::accept(m_lsd, (struct sockaddr*)&address, &len);  // blocks thread until 
+    if (sd < 0) {						 // connection received
         perror("accept() failed");
         return NULL;
     }

@@ -38,20 +38,20 @@ void Server::handleConnection(wqueue<WorkItem*>& queue) {
   // is placed on the queue.
   
   for (int i = 0;; i++) {
-    printf("some thread, loop %d - waiting for item...\n", i);
     WorkItem* item = queue.remove();
-    printf("some thread, loop %d - got one item\n", i);
     TCPStream* stream = item->getStream();
- 
-    // Echo messages back the client until the connection is 
+    // Echo coordinates back the client until the connection is 
     // closed
-    char input[256];
-    int len;
-    while ((len = stream->receive(input, sizeof(input)-1)) > 0 ){
-      input[len] = NULL;
-      stream->send(input, len);
-      printf("some thread, echoed '%s' back to the client\n", input);
+    while (true) {
+      int input;
+      ssize_t len;
+      while ((len = stream->receive((char*)&input, sizeof(input))) > 0 ){
+	int coord = ntohl(input);
+	stream->send((const char*) &coord, sizeof(int));
+	printf("some thread, echoed '%d' back to the client\n", coord);  
+      }
     }
+    
     delete item; 
   }
 
@@ -60,18 +60,25 @@ void Server::handleConnection(wqueue<WorkItem*>& queue) {
 void Server::acceptConnections() {
   // create queue and consumer threads
   wqueue<WorkItem*> queue;
-  
-  for (int i = 0; i < 2; i++)
-    std::thread (&Server::handleConnection, this, std::ref(queue));
-  
+
+  tPlayer1 = std::thread(&Server::handleConnection, this, std::ref(queue));
+  tPlayer2 = std::thread(&Server::handleConnection, this, std::ref(queue));
 
   WorkItem* item;
   TCPStream* stream = NULL;
   TCPAcceptor* acceptor = new TCPAcceptor(port, ip);
   if (acceptor->start() == 0) {
     while (1) { // accept connections until there are two players
-      stream = acceptor->accept();
+      stream = acceptor->accept(); // blocks thread until connection received
+      if (!stream) {
+	printf("Could not accept a connection\n");
+	continue;
+      }
       item = new WorkItem(stream);
+      if (!item) {
+	printf("Could not create work item a connection\n");
+	continue;
+      }
       queue.add(item);
     }
   }

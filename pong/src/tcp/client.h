@@ -15,6 +15,7 @@ class Client {
  public:
   Client(int port, const char* ip);
   ~Client();
+  void sendCoords(int x);
 
 };
 
