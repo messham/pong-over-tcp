@@ -21,6 +21,7 @@
 */
 
 #include "window.h"
+#include <stdexcept>
 #include <thread>
 #include <iostream>
 
@@ -28,28 +29,72 @@ class WindowMP : public Window {
 private:
   Player* player2;
   std::thread tReceiver;
+  bool clientIsConnected = false;
 
   void streamCoords() {
-    while (true) {
-      int recv = client->receiveCoords();
-      printf("client received - %d\n", recv);      
+    while (clientIsConnected) {
+      int coords = client->receiveCoords();
+      printf("client received - %d\n", coords);      
       // do something with coords
+      game->movePlayer(player, coords);
     }
   }
   
   void startReceiving() {
+    clientIsConnected = true;
     tReceiver = std::thread(&WindowMP::streamCoords, this);    
   }
   
   void stopReceiving() {
-    if (tReceiver.joinable()) tReceiver.join();
+    clientIsConnected = false;
+    sleep(1); //ensure thread has completed before joining
+    if (tReceiver.joinable()) tReceiver.detach();
   }
 
 public:
-  WindowMP(Client* client, Server* server) : Window()  {
+  WindowMP() : Window()  {
     // game init
-    this->client = client;
-    this->server = server;
+    client = NULL;
+    server = NULL;
+    
+    // try connecting client to inputted port/ip,
+    // if no server there try creating new server with
+    // given port/ip
+    while (!client) {
+      cout << "Please enter port and ip of server to connect to "
+	   << "(default: port 8000 ip localhost)" << endl;
+      string tmpport;
+      int port;
+      cout << "port: ";
+      getline(cin, tmpport);
+      if (tmpport.empty()) port = 8000;
+      else port = atoi(tmpport.c_str());
+    
+      string tmpip;
+      cout << "ip: ";
+      getline(cin, tmpip);
+      if (tmpip.empty()) tmpip = "localhost";
+      const char* ip = tmpip.c_str();
+      
+      try {
+	client = new Client(port, ip);
+      }
+      catch (exception e){
+	string ans;
+	while (!server) {
+	  cout << "Could not connect to server. Start one at given port/ip? (Y/N): ";
+	  getline(cin, ans);
+	  if (ans == "N" || ans == "n")
+	    throw std::invalid_argument("User decided not to start server");
+	  else if (ans == "Y" || ans == "y")  {
+	    server = new Server(port, ip);
+	    server->start();
+	    client = new Client(port, ip);
+	    cout << "Connecting to port: " << port <<  ", server: " << tmpip << endl;
+	  }
+	} 
+      }
+    }
     player = new Player(P1YPOS, this);
     player2 = new Player(P2YPOS, this);
     game = new Game(this, player, player2);
@@ -57,19 +102,16 @@ public:
   }
   
   void mouseMoveEvent(QMouseEvent* event) {
-    // currently just sends coords and doesn't move player
+    // send mouse coords to server
     client->sendCoords(event->x());
-    
-    // uncomment below to move payer and not send coords
-    /* game->movePlayer(player, event->x()); */
-    /* cout << event->x() << endl; */
-    // send coords to server
   }
 
   ~WindowMP() {
+    stopReceiving();    
+    delete client;
+    delete server;
     delete player;
     delete player2;
     delete game;
-    stopReceiving();
   }
 };

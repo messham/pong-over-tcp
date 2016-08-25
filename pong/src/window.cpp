@@ -51,6 +51,7 @@ Window::Window() {
   setCursor(Qt::BlankCursor);
 
   setMouseTracking(true);
+  setAttribute(Qt::WA_DeleteOnClose);
 }
 
 Window::Window(Client* client) {
