@@ -58,6 +58,10 @@ Window::Window(Client* client) {
   this->client = client;
 }
 
+Window::~Window() {
+  delete frame;
+}
+
 int Window::getWidth() {
   return width;
 }

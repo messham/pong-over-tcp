@@ -102,6 +102,8 @@ void Server::start() {
 
 void Server::stop() {
   isRunning = false;
+  if (tPlayer1.joinable()) tPlayer1.join();
+  if (tPlayer2.joinable()) tPlayer2.join();
   if (tAccept.joinable()) tAccept.join();
 }
 

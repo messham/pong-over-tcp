@@ -5,6 +5,14 @@
 #include <thread>
 #include <vector>
 
+/*
+struct tPlayer
+{
+  std::thread thread;
+  int id;
+};
+*/
+
 class Server {
 
  private:

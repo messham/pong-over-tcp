@@ -55,6 +55,7 @@ class Window : public QWidget {
  public:
   Window();
   Window(Client* client);
+  ~Window();
   int getWidth();
   int getHeight();
 };

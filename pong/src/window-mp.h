@@ -21,19 +21,39 @@
 */
 
 #include "window.h"
-
+#include <thread>
 #include <iostream>
-using namespace std;
 
 class WindowMP : public Window {
+private:
+  Player* player2;
+  std::thread tReceiver;
+
+  void streamCoords() {
+    while (true) {
+      int recv = client->receiveCoords();
+      printf("client received - %d\n", recv);      
+      // do something with coords
+    }
+  }
+  
+  void startReceiving() {
+    tReceiver = std::thread(&WindowMP::streamCoords, this);    
+  }
+  
+  void stopReceiving() {
+    if (tReceiver.joinable()) tReceiver.join();
+  }
+
 public:
   WindowMP(Client* client, Server* server) : Window()  {
     // game init
     this->client = client;
     this->server = server;
     player = new Player(P1YPOS, this);
-    Player* player2 = new Player(P2YPOS, this);
+    player2 = new Player(P2YPOS, this);
     game = new Game(this, player, player2);
+    startReceiving();
   }
   
   void mouseMoveEvent(QMouseEvent* event) {
@@ -44,5 +64,12 @@ public:
     /* game->movePlayer(player, event->x()); */
     /* cout << event->x() << endl; */
     // send coords to server
+  }
+
+  ~WindowMP() {
+    delete player;
+    delete player2;
+    delete game;
+    stopReceiving();
   }
 };

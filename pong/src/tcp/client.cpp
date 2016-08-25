@@ -32,7 +32,8 @@ Client::Client(int port, const char* ip) {
   this->port = port;
   this->ip = ip;
   connector = new TCPConnector();
-  stream = connector->connect(ip, port); 
+  stream = connector->connect(ip, port);
+  
 
   if (!stream) {
     throw std::invalid_argument("Client::Client - stream failed to connect to given port and ip");
@@ -60,16 +61,22 @@ Client::~Client() {
 void Client::sendCoords(int x) {
   
   if (!stream) {
-    printf("No connection to server!");
-    return; //return -1;
+    printf("sendCoords::No connection to server!");
+    return;
   }
   int coord = htonl(x);
   stream->send((const char*) &coord, sizeof(int));
   printf("client sent - %d\n", x);
-  
+}
+
+int Client::receiveCoords() {
+  if (!stream) {
+    printf("receiveCoords::No connection to server!");
+    return -1; 
+  }
+
   ssize_t len;
   int recv;
   len = stream->receive((char*)&recv, sizeof(recv));
-  // recv = htonl(recv);
-  printf("client received - %d\n", recv);
+  return recv;
 }
