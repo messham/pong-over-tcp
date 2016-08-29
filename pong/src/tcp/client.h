@@ -7,10 +7,12 @@
 class Client {
 
  private:
+  int id;
   int port;
   const char* ip;
   TCPConnector* connector;
   TCPStream* stream;
+  int receiveId();
   // std::thread tReceiver;
   // void startReceiving();
   // void stopReceiving();

@@ -44,7 +44,8 @@ int main(int argc, char **argv)
     try {
       window = new WindowMP();  
     }
-    catch (exception e){
+    catch (exception &e){
+      printf(e.what());
       return 0; // user decided not to start server
     } 
   }

@@ -77,7 +77,7 @@ public:
       const char* ip = tmpip.c_str();
       
       try {
-	client = new Client(port, ip);
+	client = new Client(port, ip);   
       }
       catch (exception e){
 	string ans;
@@ -85,11 +85,11 @@ public:
 	  cout << "Could not connect to server. Start one at given port/ip? (Y/N): ";
 	  getline(cin, ans);
 	  if (ans == "N" || ans == "n")
-	    throw std::invalid_argument("User decided not to start server");
+	    throw std::invalid_argument("No server to join. Exiting.\n");
 	  else if (ans == "Y" || ans == "y")  {
 	    server = new Server(port, ip);
 	    server->start();
-	    client = new Client(port, ip);
+	    client = new Client(port, ip); 
 	    cout << "Connecting to port: " << port <<  ", server: " << tmpip << endl;
 	  }
 	} 

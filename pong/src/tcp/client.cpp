@@ -24,6 +24,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
+#include "server.h" //req'd for coord struct
 #include "client.h"
 
 #include <iostream>
@@ -33,40 +34,26 @@ Client::Client(int port, const char* ip) {
   this->ip = ip;
   connector = new TCPConnector();
   stream = connector->connect(ip, port);
-  
-
+  id = receiveId();
   if (!stream) {
     throw std::invalid_argument("Client::Client - stream failed to connect to given port and ip");
-  }
-
-
-  int len;
-  string message;
-  char line[256];
-  if (stream) {
-    // message = "Is there life on Mars?";
-    // stream->send(message.c_str(), message.size());
-    // printf("sent - %s\n", message.c_str());
-    // len = stream->receive(line, sizeof(line));
-    // line[len] = 0;
-    // printf("client received - %s\n", line); //BLOCKING??
   }
 }
 
 Client::~Client() {
   delete connector;
   delete stream;
+  printf("client deleted\n");
 }
 
 void Client::sendCoords(int x) {
-  
   if (!stream) {
     printf("sendCoords::No connection to server!");
     return;
   }
   int coord = htonl(x);
   stream->send((const char*) &coord, sizeof(int));
-  printf("client sent - %d\n", x);
+  printf("client %d sent - %d\n", this->id, x);
 }
 
 int Client::receiveCoords() {
@@ -74,9 +61,20 @@ int Client::receiveCoords() {
     printf("receiveCoords::No connection to server!");
     return -1; 
   }
-
   ssize_t len;
   int recv;
   len = stream->receive((char*)&recv, sizeof(recv));
-  return recv;
+  return recv; // why does this not need to be htonl'd?
 }
+
+int Client::receiveId() {
+  if (!stream) {
+    printf("receiveId::No connection to server!");
+    return -1;
+  }
+  ssize_t len;
+  int recv;
+  len = stream->receive((char*)&recv, sizeof(recv));
+  return htonl(recv);
+}
+  
