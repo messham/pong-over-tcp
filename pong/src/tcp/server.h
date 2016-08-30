@@ -36,8 +36,6 @@ class Server {
   void acceptConnections();
   void assignId(TCPStream* stream, int workerId);
   void handleConnection(wqueue<WorkItem*>& queue, struct thread_data& td);
-  void addConnection(TCPStream* stream);
-  void removeConnection(TCPStream* stream);
   void receiveMovements(TCPStream* stream, int workerId);
   void sendMovements(/*something*/);
   bool isRunning;

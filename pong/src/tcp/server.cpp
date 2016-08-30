@@ -64,15 +64,6 @@ void Server::sendMovements() {
   }
 }
 
-void Server::addConnection(TCPStream* stream) {
-  connections.push_back(stream);
-}
-
-void Server::removeConnection(TCPStream* stream) {
-  connections.erase(std::remove(connections.begin(), connections.end(), stream),
-		    connections.end());
-}
-
 void Server::handleConnection(wqueue<WorkItem*>& queue, struct thread_data& td) {
   // Remove 1 item at a time and process it. Blocks until an item 
   // is placed on the queue.
