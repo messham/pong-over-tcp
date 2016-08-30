@@ -5,6 +5,14 @@
 #include <queue>
 #include <thread>
 #include <vector>
+#include <mutex>
+
+struct thread_data
+{
+  int id;
+  TCPStream* stream;  
+  std::thread t;
+};
 
 struct player_coord
 {
@@ -12,27 +20,26 @@ struct player_coord
   int coord;
 };
 
-struct worker_thread
-{
-  int id;
-  std::thread t;  
-};
-
 class Server {
 
  private:
   int port;
   const char* ip;
-  std::queue<int> ids;
-  std::thread tAccept;
-  // struct worker_thread tPlayer1;
-  // struct worker_thread tPlayer2;
-  std::thread tPlayer1;
-  std::thread tPlayer2;
-  wqueue<int*> qPlayerCoords;    
+  std::vector<TCPStream*> connections;
+  std::thread tAcceptConnections;
+  struct thread_data playerThreads[2];
+  // std::thread tPlayer1;
+  // std::thread tPlayer2;
+  std::thread tSendMovements;
+  mutex m_mutex;
+  wqueue<struct player_coord*>* qPlayerCoords;    
   void acceptConnections();
   void assignId(TCPStream* stream, int workerId);
-  void handleConnection(wqueue<WorkItem*>& queue, int workerId);
+  void handleConnection(wqueue<WorkItem*>& queue, struct thread_data& td);
+  void addConnection(TCPStream* stream);
+  void removeConnection(TCPStream* stream);
+  void receiveMovements(TCPStream* stream, int workerId);
+  void sendMovements(/*something*/);
   bool isRunning;
 
  public:

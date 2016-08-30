@@ -42,8 +42,6 @@ class WorkItem {
     TCPStream* getStream() { return m_stream; }
 };
 
-#define MAXSIZE 2
-
 template <typename T> class wqueue
 {
 private:
@@ -51,11 +49,14 @@ private:
   mutex  m_mutex;
   condition_variable cvIsEmpty;
   condition_variable cvIsFull;
+  int numElements;
   // note: unique_lock releases lock when it (lk) is destroyed (no need to call unlock)
   
 public:
 
-  wqueue() {}
+  wqueue(int numElements) {
+    this->numElements = numElements;
+  }
   
   ~wqueue() {}
   
@@ -63,7 +64,7 @@ public:
   
   void add(T item) {
     unique_lock<mutex> lk(m_mutex);
-    while (m_queue.size() == MAXSIZE) {
+    while (m_queue.size() == numElements) {
       cvIsFull.wait(lk);
     }
     m_queue.push_back(item);

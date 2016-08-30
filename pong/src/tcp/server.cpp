@@ -24,8 +24,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <thread>
-#include <mutex>
 #include "server.h"
 #include "wqueue.h"
 #include "tcpacceptor.h"
@@ -38,41 +36,72 @@ void Server::assignId(TCPStream* stream, int workerId) {
   stream->send((const char*) &id, sizeof(int));
 }
 
-void Server::handleConnection(wqueue<WorkItem*>& queue, int workerId) {
-  // Remove 1 item at a time and process it. Blocks until an item 
-  // is placed on the queue.
-  
-  while(isRunning) {
-    WorkItem* item = queue.remove();
-    TCPStream* stream = item->getStream();
-    // Echo coordinates back the client until the connection is 
-    // closed
-    printf("new player has arrived\n");
-    assignId(stream, workerId);
+void Server::receiveMovements(TCPStream* stream, int workerId) {
     int input;
     ssize_t len;
     while ((len = stream->receive((char*)&input, sizeof(input))) > 0 && isRunning){
-      int coord = ntohl(input);
-      stream->send((const char*) &coord, sizeof(int));
-      printf("thread %d echoed '%d' back to the client\n", workerId, coord);  
+      struct player_coord* pCoord = new player_coord;
+      pCoord->id = workerId;
+      pCoord->coord = ntohl(input);
+      qPlayerCoords->add(pCoord);
+
     }
-    printf("a player has left\n");
+}
+
+void Server::sendMovements() {
+  while (isRunning) {
+    struct player_coord* pCoord = qPlayerCoords->remove();
+    for (int i = 0; i < 2; i++) {
+      if (playerThreads[i].stream) {
+	// build int where 1st byte = id; last 3 bytes = coords
+	int coord = pCoord->coord;
+	int id_coord = (pCoord->id << 24) | pCoord->coord;
+	playerThreads[i].stream->send((const char*) &id_coord, sizeof(int));
+	printf("player id %d and coord %d map to integer %d\n", pCoord->id, pCoord->coord, id_coord);
+	// printf("sent player %d movement of %d to client\n", pCoord->id, pCoord->coord);
+      }
+    }
+  }
+}
+
+void Server::addConnection(TCPStream* stream) {
+  connections.push_back(stream);
+}
+
+void Server::removeConnection(TCPStream* stream) {
+  connections.erase(std::remove(connections.begin(), connections.end(), stream),
+		    connections.end());
+}
+
+void Server::handleConnection(wqueue<WorkItem*>& queue, struct thread_data& td) {
+  // Remove 1 item at a time and process it. Blocks until an item 
+  // is placed on the queue.
+  while(isRunning) {
+    WorkItem* item = queue.remove();
+    TCPStream* stream = item->getStream();
     
+    printf("new player has arrived\n");
+    td.stream = stream;
+    assignId(stream, td.id);
+    receiveMovements(stream, td.id);
+    
+    printf("a player has left\n");
+    td.stream = NULL;
     delete item; 
   }
 }
 
 void Server::acceptConnections() {
   // create queue and consumer threads
-  wqueue<WorkItem*> queue;
+  wqueue<WorkItem*> queue(2);
+  qPlayerCoords = new wqueue<struct player_coord*>(100);
 
-  // tPlayer1.id = 1;
-  // tPlayer1.t = std::thread(&Server::handleConnection, this, std::ref(queue), 1);
-  // tPlayer2.id = 2;
-  // tPlayer2.t = std::thread(&Server::handleConnection, this, std::ref(queue), 2);
-  
-  tPlayer1 = std::thread(&Server::handleConnection, this, std::ref(queue), 1);
-  tPlayer2 = std::thread(&Server::handleConnection, this, std::ref(queue), 2);
+  for (int i = 0; i < 2; i++) {
+    playerThreads[i].id = i + 1;
+    playerThreads[i].stream = NULL;
+    playerThreads[i].t = std::thread(&Server::handleConnection, this, std::ref(queue), std::ref(playerThreads[i]));
+  }  
+  tSendMovements = std::thread(&Server::sendMovements, this);
 
   WorkItem* item;
   TCPStream* stream = NULL;
@@ -96,8 +125,6 @@ void Server::acceptConnections() {
 }
 
 Server::Server(int port, const char* ip) {
-  ids.push(1);
-  ids.push(2);
   this->port = port;
   this->ip = ip;
   isRunning = false;
@@ -108,16 +135,16 @@ Server::~Server() {
 }
 
 void Server::start() {
-  isRunning = true;  
-  tAccept = std::thread(&Server::acceptConnections, this);
+  isRunning = true;
+  tAcceptConnections = std::thread(&Server::acceptConnections, this);
 }
 
 void Server::stop() {
   isRunning = false;
-  // if (tPlayer1.t.joinable()) tPlayer1.t.detach();
-  // if (tPlayer2.t.joinable()) tPlayer2.t.detach();
-  if (tPlayer1.joinable()) tPlayer1.detach();
-  if (tPlayer2.joinable()) tPlayer2.detach();  
-  if (tAccept.joinable()) tAccept.detach();
+  for (auto& td : playerThreads) {
+    if (td.t.joinable()) td.t.detach();
+  }
+  if (tSendMovements.joinable()) tSendMovements.detach();
+  if (tAcceptConnections.joinable()) tAcceptConnections.detach();
+  delete qPlayerCoords;
 }
-

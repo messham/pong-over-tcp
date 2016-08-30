@@ -33,10 +33,12 @@ private:
 
   void streamCoords() {
     while (clientIsConnected) {
-      int coords = client->receiveCoords();
-      printf("client received - %d\n", coords);      
-      // do something with coords
-      game->movePlayer(player, coords);
+      struct player_coord pCoord = client->receiveCoords();
+      printf("client received - player %d moved to coord %d\n", pCoord.id, pCoord.coord);
+      if (pCoord.id == client->getId())
+	game->movePlayer(player, pCoord.coord);
+      else
+	game->movePlayer(player2, pCoord.coord);
     }
   }
   

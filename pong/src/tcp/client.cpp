@@ -46,6 +46,10 @@ Client::~Client() {
   printf("client deleted\n");
 }
 
+int Client::getId() {
+  return id;
+}
+
 void Client::sendCoords(int x) {
   if (!stream) {
     printf("sendCoords::No connection to server!");
@@ -56,15 +60,15 @@ void Client::sendCoords(int x) {
   printf("client %d sent - %d\n", this->id, x);
 }
 
-int Client::receiveCoords() {
+struct player_coord Client::receiveCoords() {
   if (!stream) {
     printf("receiveCoords::No connection to server!");
-    return -1; 
+    return {-1, -1}; 
   }
   ssize_t len;
   int recv;
   len = stream->receive((char*)&recv, sizeof(recv));
-  return recv; // why does this not need to be htonl'd?
+  return {recv >> 24, recv & 0xffffff}; // why does this not need to be htonl'd?
 }
 
 int Client::receiveId() {

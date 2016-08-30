@@ -20,8 +20,9 @@ class Client {
  public:
   Client(int port, const char* ip);
   ~Client();
+  int getId();
   void sendCoords(int x);
-  int receiveCoords();
+  struct player_coord receiveCoords();
 
 };
 
